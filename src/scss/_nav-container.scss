@@ -1,0 +1,25 @@
+.character-nav {
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: 30px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 25px;
+  height: 25px;
+
+  text-decoration: none;
+  border: 1px solid darkblue;
+  box-shadow: 4px 4px 8px 0px rgba(50, 50, 50, 1);
+
+  cursor: pointer;
+
+  &:not(:last-child) {
+    margin-right: 10px;
+  }
+}
