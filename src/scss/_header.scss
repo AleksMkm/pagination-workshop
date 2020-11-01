@@ -30,6 +30,7 @@
 
 .status-filter {
   display: flex;
+  justify-content: space-between;
 }
 
 .status-btn {
@@ -42,8 +43,4 @@
   background-color: lightgray;
   border: 3px solid white;
   border-radius: 5px;
-
-  &:not(:last-child) {
-    margin-right: 10px;
-  }
 }

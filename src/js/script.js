@@ -1,6 +1,6 @@
 import getRefs from './get-refs';
 import ApiService from './api-service';
-import characterCardTpl from '../templates/character-card.hbs';
+import markup from './markup';
 
 const refs = getRefs();
 
@@ -10,20 +10,16 @@ fetch('https://rickandmortyapi.com/api/character')
   .then(response => response.json())
   .then(console.log);
 
-apiService.fetchCharacters().then(renderCardMarkup);
-apiService.getPaginationData().then(generateNavMarkup);
+initializeDefaultInterface();
 
-function renderCardMarkup(data) {
-  const markup = characterCardTpl(data);
-  refs.cardContainer.innerHTML = markup;
+function initializeDefaultInterface() {
+  apiService.fetchCharacters().then(markup.renderCardMarkup);
+  apiService.getPaginationData().then(markup.generateNavMarkup);
+  setTimeout(setFirstNavBtnStyle, 50);
 }
 
-function generateNavMarkup(num) {
-  let markup = '';
-  for (let i = 1; i <= num; i += 1) {
-    markup += `<a class="nav-btn" data-page="${i}">${i}</a>`;
-  }
-  refs.navContainer.innerHTML = markup;
+function setFirstNavBtnStyle() {
+  document.querySelector('.nav-btn').classList.add('nav-btn-active');
 }
 
 refs.navContainer.addEventListener('click', onPageChange);
@@ -31,6 +27,12 @@ refs.navContainer.addEventListener('click', onPageChange);
 function onPageChange(e) {
   e.preventDefault();
   if (e.target.nodeName !== 'A') return;
+  document.querySelectorAll('.nav-btn').forEach(el => {
+    el.classList.remove('nav-btn-active');
+  });
   apiService.page = +e.target.dataset.page;
-  apiService.fetchCharacters().then(renderCardMarkup);
+  apiService.fetchCharacters().then(markup.renderCardMarkup);
+  e.target.classList.add('nav-btn-active');
 }
+
+console.log(refs.filterContainer);
