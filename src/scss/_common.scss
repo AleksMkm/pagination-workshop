@@ -1,13 +1,15 @@
 body {
   font-family: 'Roboto', sans-serif;
 
-  background-color: lightgray;
+  background-color: black;
 }
 
 .container {
   padding: 15px;
   margin: 0 auto;
   width: 1300px;
+}
 
-  background-color: white;
+.main {
+  background-color: lightgray;
 }
