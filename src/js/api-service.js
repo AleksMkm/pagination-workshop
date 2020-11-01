@@ -5,10 +5,11 @@ export default class ApiService {
     this.searchQuery = '';
     this._page = 1;
     this._status = '';
+    this._name = '';
   }
 
   fetchCharacters() {
-    const url = `${BASE_URL}/character/?page=${this._page}&status=${this._status}`;
+    const url = `${BASE_URL}/character/?page=${this._page}&status=${this._status}&name=${this._name}`;
 
     return this.fetchData(url).then(({ results }) => {
       return results;
@@ -16,7 +17,7 @@ export default class ApiService {
   }
 
   getPaginationData() {
-    const url = `${BASE_URL}/character/?status=${this._status}`;
+    const url = `${BASE_URL}/character/?status=${this._status}&name=${this._name}`;
 
     return this.fetchData(url).then(({ info }) => {
       return info.pages;
@@ -41,5 +42,13 @@ export default class ApiService {
 
   set page(newPage) {
     this._page = newPage;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(newName) {
+    this._name = newName;
   }
 }

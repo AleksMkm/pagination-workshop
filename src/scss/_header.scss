@@ -68,3 +68,20 @@
   border: 3px solid white;
   border-radius: 5px;
 }
+
+.search-form {
+  display: flex;
+}
+
+.search-btn {
+  display: block;
+  padding: 3px 7px;
+
+  text-align: center;
+  font-size: 12px;
+  text-decoration: none;
+  color: black;
+  background-color: lightgray;
+  border: 3px solid white;
+  border-radius: 5px;
+}

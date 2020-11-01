@@ -16,4 +16,12 @@ function generateNavMarkup(num) {
   refs.navContainer.innerHTML = markup;
 }
 
-export default { renderCardMarkup, generateNavMarkup };
+function renderErrorNotification() {
+  refs.navContainer.innerHTML = `<div>Opps! No data to match your request! Please enter another name.</div>`;
+}
+
+export default {
+  renderCardMarkup,
+  generateNavMarkup,
+  renderErrorNotification,
+};

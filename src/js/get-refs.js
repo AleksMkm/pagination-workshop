@@ -5,5 +5,6 @@ export default function getRefs() {
     filterContainer: document.querySelector('#filter'),
     resetBtn: document.querySelector('.reset-btn'),
     searchForm: document.querySelector('.js-search-form'),
+    searchResultEl: document.querySelector('.search-result'),
   };
 }

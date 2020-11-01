@@ -2,14 +2,26 @@
   <div class="container">
     <div class="header-nav">
       <div class="filters">
-        <p class="status-title">Search chars by name:</p>
-        <input type="text" class="js-search-form header-nav__search" />
+        <p class="status-title">
+          Search chars by name: <span class="search-result"></span>
+        </p>
+        <form class="form-inline search-form js-search-form">
+          <input
+            type="text"
+            class="search-field"
+            autocomplete="off"
+            name="query"
+            placeholder="Type name here"
+          />
+          <button type="submit" class="search-btn">Go!</button>
+        </form>
         <div class="status">
           <p class="status-title">Filter chars by status:</p>
           <div class="status-filter" id="filter">
             <a href="" class="status-btn" data-status="alive">Alive</a>
             <a href="" class="status-btn" data-status="unknown">Unknown</a>
             <a href="" class="status-btn" data-status="dead">Dead</a>
+            <a href="" class="status-btn" data-status="">All</a>
           </div>
         </div>
         <div class="reset">
