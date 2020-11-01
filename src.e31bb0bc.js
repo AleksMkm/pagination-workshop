@@ -207,7 +207,9 @@ function getRefs() {
     cardContainer: document.querySelector('.js-card-container'),
     navContainer: document.querySelector('.js-nav-container'),
     filterContainer: document.querySelector('#filter'),
-    searchForm: document.querySelector('.js-search-form')
+    resetBtn: document.querySelector('.reset-btn'),
+    searchForm: document.querySelector('.js-search-form'),
+    searchResultEl: document.querySelector('.search-result')
   };
 }
 },{}],"js/api-service.js":[function(require,module,exports) {
@@ -232,15 +234,15 @@ var ApiService = /*#__PURE__*/function () {
 
     this.searchQuery = '';
     this._page = 1;
+    this._status = '';
+    this._name = '';
   }
 
   _createClass(ApiService, [{
     key: "fetchCharacters",
     value: function fetchCharacters() {
-      var url = "".concat(BASE_URL, "/character/?page=").concat(this._page);
-      return fetch(url).then(function (response) {
-        return response.json();
-      }).then(function (_ref) {
+      var url = "".concat(BASE_URL, "/character/?page=").concat(this._page, "&status=").concat(this._status, "&name=").concat(this._name);
+      return this.fetchData(url).then(function (_ref) {
         var results = _ref.results;
         return results;
       });
@@ -248,13 +250,26 @@ var ApiService = /*#__PURE__*/function () {
   }, {
     key: "getPaginationData",
     value: function getPaginationData() {
-      var url = "".concat(BASE_URL, "/character");
-      return fetch(url).then(function (response) {
-        return response.json();
-      }).then(function (_ref2) {
+      var url = "".concat(BASE_URL, "/character/?status=").concat(this._status, "&name=").concat(this._name);
+      return this.fetchData(url).then(function (_ref2) {
         var info = _ref2.info;
         return info.pages;
       });
+    }
+  }, {
+    key: "fetchData",
+    value: function fetchData(url) {
+      return fetch(url).then(function (response) {
+        return response.json();
+      });
+    }
+  }, {
+    key: "status",
+    get: function get() {
+      return this._status;
+    },
+    set: function set(newStatus) {
+      this._status = newStatus;
     }
   }, {
     key: "page",
@@ -263,6 +278,14 @@ var ApiService = /*#__PURE__*/function () {
     },
     set: function set(newPage) {
       this._page = newPage;
+    }
+  }, {
+    key: "name",
+    get: function get() {
+      return this._name;
+    },
+    set: function set(newName) {
+      this._name = newName;
     }
   }]);
 
@@ -2439,9 +2462,14 @@ function generateNavMarkup(num) {
   refs.navContainer.innerHTML = markup;
 }
 
+function renderErrorNotification() {
+  refs.navContainer.innerHTML = "<div>Opps! No data to match your request! Please enter another name.</div>";
+}
+
 var _default = {
   renderCardMarkup: renderCardMarkup,
-  generateNavMarkup: generateNavMarkup
+  generateNavMarkup: generateNavMarkup,
+  renderErrorNotification: renderErrorNotification
 };
 exports.default = _default;
 },{"./get-refs":"js/get-refs.js","../templates/character-card.hbs":"templates/character-card.hbs"}],"js/script.js":[function(require,module,exports) {
@@ -2457,22 +2485,44 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var refs = (0, _getRefs.default)();
 var apiService = new _apiService.default();
-fetch('https://rickandmortyapi.com/api/character').then(function (response) {
-  return response.json();
-}).then(console.log);
-initializeDefaultInterface();
+initializeInterface();
+refs.navContainer.addEventListener('click', onPageChange);
+refs.filterContainer.addEventListener('click', onFilterChange);
+refs.resetBtn.addEventListener('click', resetInterfaceToDefault);
+refs.searchForm.addEventListener('submit', onSearch);
 
-function initializeDefaultInterface() {
-  apiService.fetchCharacters().then(_markup.default.renderCardMarkup);
-  apiService.getPaginationData().then(_markup.default.generateNavMarkup);
-  setTimeout(setFirstNavBtnStyle, 50);
+function initializeInterface() {
+  apiService.fetchCharacters().then(_markup.default.renderCardMarkup).catch(function (data) {
+    apiService.name = '';
+
+    _markup.default.renderErrorNotification();
+  });
+  apiService.getPaginationData().then(function (data) {
+    _markup.default.generateNavMarkup(data);
+
+    setFirstNavBtnStyle();
+  }).catch(function (data) {
+    apiService.name = '';
+
+    _markup.default.renderErrorNotification();
+  });
+}
+
+function resetInterfaceToDefault(e) {
+  e.preventDefault();
+  apiService.page = 1;
+  apiService.status = '';
+  apiService.name = '';
+  refs.searchResultEl.textContent = '';
+  document.querySelectorAll('.status-btn').forEach(function (el) {
+    el.classList.remove('status-btn-active');
+  });
+  initializeInterface();
 }
 
 function setFirstNavBtnStyle() {
   document.querySelector('.nav-btn').classList.add('nav-btn-active');
 }
-
-refs.navContainer.addEventListener('click', onPageChange);
 
 function onPageChange(e) {
   e.preventDefault();
@@ -2481,11 +2531,52 @@ function onPageChange(e) {
     el.classList.remove('nav-btn-active');
   });
   apiService.page = +e.target.dataset.page;
-  apiService.fetchCharacters().then(_markup.default.renderCardMarkup);
-  e.target.classList.add('nav-btn-active');
+  apiService.fetchCharacters().then(function (data) {
+    _markup.default.renderCardMarkup(data);
+
+    e.target.classList.add('nav-btn-active');
+  }).catch(function (data) {
+    console.log('Houston, we have a problem!');
+  });
 }
 
-console.log(refs.filterContainer);
+function onFilterChange(e) {
+  e.preventDefault();
+  if (e.target.nodeName !== 'A') return;
+  document.querySelectorAll('.status-btn').forEach(function (el) {
+    el.classList.remove('status-btn-active');
+  });
+  apiService.page = 1;
+  apiService.status = e.target.dataset.status;
+  apiService.fetchCharacters().then(function (data) {
+    _markup.default.renderCardMarkup(data);
+
+    e.target.classList.add('status-btn-active');
+  }).catch(function (data) {
+    console.log('Houston, we have a problem!');
+  });
+  apiService.getPaginationData().then(function (data) {
+    _markup.default.generateNavMarkup(data);
+
+    setFirstNavBtnStyle();
+  }).catch(function (data) {
+    console.log('Houston, we have a problem!');
+  });
+}
+
+function onSearch(e) {
+  e.preventDefault();
+  apiService.page = 1;
+  apiService.name = e.currentTarget.elements.query.value;
+
+  if (apiService.name === '') {
+    return alert('Please type a name');
+  }
+
+  refs.searchResultEl.textContent = e.currentTarget.elements.query.value;
+  e.currentTarget.elements.query.value = '';
+  initializeInterface();
+}
 },{"./get-refs":"js/get-refs.js","./api-service":"js/api-service.js","./markup":"js/markup.js"}],"index.js":[function(require,module,exports) {
 "use strict";
 
@@ -2520,7 +2611,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49680" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51265" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

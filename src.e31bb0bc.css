@@ -336,6 +336,10 @@ body {
   margin-right: 130px;
 }
 
+.status {
+  margin-bottom: 16px;
+}
+
 .status-title {
   color: white;
 }
@@ -348,6 +352,40 @@ body {
 .status-btn {
   display: block;
   padding: 3px 7px;
+  font-size: 12px;
+  text-decoration: none;
+  color: black;
+  background-color: lightgray;
+  border: 3px solid white;
+  border-radius: 5px;
+}
+
+.status-btn-active {
+  background-color: white;
+  color: darkblue;
+  font-weight: 700;
+}
+
+.reset-btn {
+  display: block;
+  padding: 3px 7px;
+  text-align: center;
+  font-size: 12px;
+  text-decoration: none;
+  color: black;
+  background-color: lightgray;
+  border: 3px solid white;
+  border-radius: 5px;
+}
+
+.search-form {
+  display: flex;
+}
+
+.search-btn {
+  display: block;
+  padding: 3px 7px;
+  text-align: center;
   font-size: 12px;
   text-decoration: none;
   color: black;
